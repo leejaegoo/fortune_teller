@@ -1,0 +1,364 @@
+/* 전역 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+}
+
+/* 헤더 */
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeInDown 0.8s ease;
+}
+
+.title {
+    font-size: 3.5rem;
+    color: #fff;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+/* 폼 컨테이너 */
+.form-container {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.8s ease;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #555;
+}
+
+.label-icon {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"] {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 성별 선택 */
+.gender-options {
+    display: flex;
+    gap: 15px;
+}
+
+.gender-option {
+    flex: 1;
+    cursor: pointer;
+}
+
+.gender-option input[type="radio"] {
+    display: none;
+}
+
+.gender-label {
+    display: block;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.gender-option input:checked + .gender-label {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.gender-label:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+/* 제출 버튼 */
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* 로딩 */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 60px 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.8s ease;
+}
+
+.loading.show {
+    display: block;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #667eea;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading p {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* 결과 컨테이너 */
+.result-container {
+    display: none;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.8s ease;
+}
+
+.result-container.show {
+    display: block;
+}
+
+.result-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.result-header h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.zodiac-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.zodiac-emoji {
+    font-size: 3rem;
+}
+
+.zodiac-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.result-date {
+    color: #999;
+    font-size: 0.95rem;
+}
+
+/* 운세 내용 */
+.fortune-content {
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.fortune-content h3 {
+    color: #667eea;
+    font-size: 1.3rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.fortune-content p {
+    margin-bottom: 15px;
+}
+
+/* 명언 */
+.quote-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.quote-icon {
+    font-size: 2.5rem;
+    opacity: 0.3;
+}
+
+.quote-content {
+    flex: 1;
+}
+
+.quote-text {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: #555;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.quote-author {
+    text-align: right;
+    color: #667eea;
+    font-weight: 600;
+}
+
+/* 다시 보기 버튼 */
+.retry-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* 푸터 */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+/* 애니메이션 */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2.5rem;
+    }
+    
+    .form-container,
+    .result-container,
+    .loading {
+        padding: 25px;
+    }
+    
+    .gender-options {
+        flex-direction: column;
+    }
+    
+    .quote-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .quote-author {
+        text-align: center;
+    }
+}
+
+/* 숨김 클래스 */
+.hidden {
+    display: none !important;
+}
+

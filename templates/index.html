@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 오늘의 운세</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- 메인 타이틀 -->
+        <header class="header">
+            <h1 class="title">🔮 오늘의 운세</h1>
+            <p class="subtitle">이름, 생년월일, 성별을 입력하고 AI가 알려주는 당신만의 운세를 확인해보세요</p>
+        </header>
+
+        <!-- 입력 폼 -->
+        <div class="form-container" id="formContainer">
+            <form id="fortuneForm">
+                <div class="form-group">
+                    <label for="name">
+                        <span class="label-icon">👤</span>
+                        이름
+                    </label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        placeholder="이름을 입력하세요" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="birthDate">
+                        <span class="label-icon">🎂</span>
+                        생년월일
+                    </label>
+                    <input 
+                        type="date" 
+                        id="birthDate" 
+                        name="birthDate" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <span class="label-icon">⚧️</span>
+                        성별
+                    </label>
+                    <div class="gender-options">
+                        <label class="gender-option">
+                            <input type="radio" name="gender" value="남성" required>
+                            <span class="gender-label">남성</span>
+                        </label>
+                        <label class="gender-option">
+                            <input type="radio" name="gender" value="여성" required>
+                            <span class="gender-label">여성</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>✨ 운세 보기</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- 로딩 -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>AI가 당신의 운세를 읽고 있습니다...</p>
+        </div>
+
+        <!-- 결과 표시 -->
+        <div class="result-container" id="resultContainer">
+            <div class="result-header">
+                <h2 id="userName"></h2>
+                <div class="zodiac-info">
+                    <span class="zodiac-emoji" id="zodiacEmoji"></span>
+                    <span class="zodiac-name" id="zodiacName"></span>
+                </div>
+                <p class="result-date" id="resultDate"></p>
+            </div>
+
+            <div class="fortune-content" id="fortuneContent">
+                <!-- AI가 생성한 운세가 여기에 표시됩니다 -->
+            </div>
+
+            <div class="quote-container">
+                <div class="quote-icon">💬</div>
+                <div class="quote-content">
+                    <p class="quote-text" id="quoteText"></p>
+                    <p class="quote-author" id="quoteAuthor"></p>
+                </div>
+            </div>
+
+            <button class="retry-btn" onclick="location.reload()">
+                🔄 다시 보기
+            </button>
+        </div>
+
+        <!-- 푸터 -->
+        <footer class="footer">
+            <p>Powered by Claude AI 🤖</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
+
