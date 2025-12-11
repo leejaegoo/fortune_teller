@@ -1,4 +1,21 @@
-/* 전역 스타일 */
+/* 
+ * Theme: Airbnb Style (Clean, Friendly, Usable)
+ */
+
+:root {
+    --primary-color: #FF385C; /* Airbnb Pink */
+    --primary-hover: #D90B3E;
+    --text-main: #222222;
+    --text-sub: #717171;
+    --border-color: #DDDDDD;
+    --bg-color: #FFFFFF;
+    --card-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --radius-card: 12px;
+    --radius-input: 8px;
+    --radius-btn: 8px;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,359 +23,310 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: var(--font-family);
+    background-color: #F7F7F7; /* Slight gray background */
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 네비게이션 바 */
+.navbar {
+    background: white;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    box-shadow: 0 1px 0 #EBEBEB;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+.logo {
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: 24px;
+    letter-spacing: -0.5px;
+}
+
+.main-wrapper {
+    padding-top: 100px; /* Navbar height + padding */
+    padding-bottom: 40px;
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 20px;
-    color: #333;
 }
 
 .container {
-    max-width: 800px;
     width: 100%;
+    max-width: 550px; /* Optimal reading width */
+    padding: 0 24px;
 }
 
-/* 헤더 */
-.header {
-    text-align: center;
-    margin-bottom: 40px;
-    animation: fadeInDown 0.8s ease;
-}
-
-.title {
-    font-size: 3.5rem;
-    color: #fff;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    font-weight: 700;
-}
-
-.subtitle {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.9);
-    line-height: 1.6;
-}
-
-/* 폼 컨테이너 */
-.form-container {
+/* 카드 공통 스타일 */
+.card-container, .result-card {
     background: white;
+    border-radius: var(--radius-card);
     padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: fadeInUp 0.8s ease;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow); /* Subtle elevation */
 }
 
-.form-group {
-    margin-bottom: 25px;
+/* 헤더 텍스트 */
+.header-text {
+    margin-bottom: 32px;
 }
 
-.form-group label {
+.header-text h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.header-text p {
+    color: var(--text-sub);
+    font-size: 16px;
+}
+
+/* 입력 폼 */
+.input-group {
+    margin-bottom: 24px;
+}
+
+.input-label {
     display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
-    font-size: 1rem;
-    color: #555;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.label-icon {
-    margin-right: 8px;
-    font-size: 1.2rem;
-}
-
-.form-group input[type="text"],
-.form-group input[type="date"] {
+.airbnb-input {
     width: 100%;
-    padding: 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+    padding: 16px;
+    font-size: 16px;
+    color: var(--text-main);
+    border: 1px solid #B0B0B0;
+    border-radius: var(--radius-input);
+    transition: all 0.2s ease;
+    background: white;
 }
 
-.form-group input:focus {
+.airbnb-input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--text-main);
+    border-width: 2px;
+    padding: 15px; /* Adjust for border width change */
 }
 
-/* 성별 선택 */
-.gender-options {
+/* 성별 선택 카드 (Tile UI) */
+.gender-selector {
     display: flex;
-    gap: 15px;
+    gap: 16px;
 }
 
-.gender-option {
+.gender-card {
     flex: 1;
     cursor: pointer;
 }
 
-.gender-option input[type="radio"] {
+.gender-card input {
     display: none;
 }
 
-.gender-label {
-    display: block;
-    padding: 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    text-align: center;
-    transition: all 0.3s ease;
+.card-content {
+    border: 1px solid #B0B0B0;
+    border-radius: var(--radius-input);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.card-content .emoji {
+    font-size: 24px;
+}
+
+.card-content span {
     font-weight: 600;
+    font-size: 14px;
 }
 
-.gender-option input:checked + .gender-label {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-color: #667eea;
+/* 선택되었을 때 스타일 - 굵은 검은색 테두리 (Airbnb Style) */
+.gender-card input:checked + .card-content {
+    border-color: var(--text-main);
+    border-width: 2px;
+    padding: 19px; /* Prevent layout shift */
+    background-color: #F7F7F7;
 }
 
-.gender-label:hover {
-    border-color: #667eea;
-    transform: translateY(-2px);
-}
-
-/* 제출 버튼 */
+/* 버튼 스타일 */
 .submit-btn {
     width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, #FF385C 0%, #BD1E59 100%);
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 1.2rem;
+    padding: 16px;
+    border-radius: var(--radius-btn);
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.1s;
+    margin-top: 16px;
 }
 
 .submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    background: linear-gradient(90deg, #E31C5F 0%, #D90B3E 100%);
 }
 
 .submit-btn:active {
-    transform: translateY(0);
+    transform: scale(0.96);
 }
 
-/* 로딩 */
+/* 로딩 애니메이션 */
 .loading {
     display: none;
     text-align: center;
-    padding: 60px 40px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: fadeInUp 0.8s ease;
+    padding: 60px 0;
 }
 
 .loading.show {
     display: block;
 }
 
-.loading-spinner {
-    width: 60px;
-    height: 60px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #667eea;
+.dots-loader {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.dots-loader div {
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-color);
     border-radius: 50%;
-    margin: 0 auto 20px;
-    animation: spin 1s linear infinite;
+    animation: bounce 1.4s infinite ease-in-out both;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.dots-loader div:nth-child(1) { animation-delay: -0.32s; }
+.dots-loader div:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
 }
 
-.loading p {
-    font-size: 1.1rem;
-    color: #666;
-}
-
-/* 결과 컨테이너 */
-.result-container {
-    display: none;
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: fadeInUp 0.8s ease;
-}
-
-.result-container.show {
-    display: block;
-}
-
+/* 결과 화면 */
 .result-header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+}
+
+.zodiac-badge {
+    display: inline-block;
+    background-color: #F7F7F7;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-main);
+    margin-bottom: 16px;
 }
 
 .result-header h2 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 15px;
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 8px;
 }
 
-.zodiac-info {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.zodiac-emoji {
-    font-size: 3rem;
-}
-
-.zodiac-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #667eea;
-}
-
-.result-date {
-    color: #999;
-    font-size: 0.95rem;
-}
-
-/* 운세 내용 */
-.fortune-content {
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 30px;
+.date-text {
+    color: var(--text-sub);
+    font-size: 14px;
 }
 
 .fortune-content h3 {
-    color: #667eea;
-    font-size: 1.3rem;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-top: 32px;
+    margin-bottom: 12px;
 }
 
 .fortune-content p {
-    margin-bottom: 15px;
+    font-size: 16px;
+    color: var(--text-sub);
+    line-height: 1.6;
+    margin-bottom: 16px;
 }
 
-/* 명언 */
-.quote-container {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 30px;
-    border-radius: 15px;
-    margin-bottom: 30px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-}
-
-.quote-icon {
-    font-size: 2.5rem;
-    opacity: 0.3;
-}
-
-.quote-content {
-    flex: 1;
+/* 명언 박스 */
+.quote-box {
+    margin-top: 40px;
+    padding: 24px;
+    background-color: #F7F7F7;
+    border-radius: var(--radius-card);
+    text-align: center;
 }
 
 .quote-text {
-    font-size: 1.1rem;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-main);
     font-style: italic;
-    color: #555;
-    margin-bottom: 10px;
-    line-height: 1.6;
+    margin-bottom: 12px;
 }
 
 .quote-author {
-    text-align: right;
-    color: #667eea;
-    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-sub);
 }
 
-/* 다시 보기 버튼 */
 .retry-btn {
     width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
+    background: white;
+    border: 1px solid var(--text-main);
+    padding: 14px;
+    border-radius: var(--radius-btn);
+    color: var(--text-main);
     font-weight: 600;
+    margin-top: 24px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.2s;
 }
 
 .retry-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    background: #F7F7F7;
 }
 
-/* 푸터 */
-.footer {
-    text-align: center;
-    margin-top: 30px;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-}
-
-/* 애니메이션 */
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-    .title {
-        font-size: 2.5rem;
-    }
-    
-    .form-container,
-    .result-container,
-    .loading {
-        padding: 25px;
-    }
-    
-    .gender-options {
-        flex-direction: column;
-    }
-    
-    .quote-container {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .quote-author {
-        text-align: center;
-    }
-}
-
-/* 숨김 클래스 */
 .hidden {
     display: none !important;
 }
 
+/* 모바일 반응형 */
+@media (max-width: 600px) {
+    .navbar { padding: 0 20px; }
+    .card-container, .result-card { 
+        padding: 24px; 
+        border: none;
+        box-shadow: none;
+        background: transparent;
+    }
+    .main-wrapper { padding-top: 60px; background: white; }
+    .container { padding: 0; }
+    
+    .airbnb-input, .submit-btn { padding: 18px; } /* 더 큰 터치 영역 */
+}

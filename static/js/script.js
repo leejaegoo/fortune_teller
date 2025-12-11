@@ -39,8 +39,15 @@ fortuneForm.addEventListener('submit', async (e) => {
         });
         
         const data = await response.json();
-        
+
+        // 디버깅: 응답 데이터 확인
+        console.log('API Response:', data);
+
         if (response.ok) {
+            // 에러 필드가 있는지 확인
+            if (data.error) {
+                throw new Error(data.error);
+            }
             // 성공: 결과 표시
             displayFortune(data);
         } else {
@@ -92,6 +99,12 @@ function displayFortune(data) {
  * Claude의 운세 텍스트를 HTML로 변환
  */
 function parseFortuneText(text) {
+    // text가 없으면 에러 메시지 반환
+    if (!text) {
+        console.error('Fortune text is undefined or empty');
+        return '<p class="error">운세를 불러올 수 없습니다. 다시 시도해주세요.</p>';
+    }
+
     // **제목** 형식을 h3 태그로 변환
     let html = text.replace(/\*\*([^*]+)\*\*/g, '<h3>$1</h3>');
     

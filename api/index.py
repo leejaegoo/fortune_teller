@@ -8,9 +8,32 @@ from flask import Flask, render_template, request, jsonify
 import random
 
 # 부모 디렉토리를 path에 추가하여 모듈 import 가능하게 함
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
-from gemini_client import GeminiClient
+try:
+    from gemini_client import GeminiClient
+except ImportError as e:
+    print(f"Import error: {e}")
+    # Fallback: gemini_client를 직접 구현
+    import google.generativeai as genai
+
+    class GeminiClient:
+        def __init__(self, api_key=None):
+            self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
+            if not self.api_key:
+                raise ValueError("GOOGLE_API_KEY 환경변수가 설정되지 않았습니다.")
+            genai.configure(api_key=self.api_key)
+            self.model = genai.GenerativeModel('models/gemini-2.5-flash')
+
+        def chat(self, message, max_tokens=2048):
+            try:
+                response = self.model.generate_content(message)
+                return response.text
+            except Exception as e:
+                return f"오류 발생: {str(e)}"
 
 # Flask 앱 초기화 - 템플릿과 static 폴더 경로 설정
 app = Flask(__name__,
@@ -86,7 +109,12 @@ def generate_fortune(name, birth_date, gender, zodiac):
         dict: 운세 정보 (전체운, 사랑운, 재물운, 건강운, 직장/학업운)
     """
     try:
-        gemini_client = GeminiClient()
+        # 환경 변수 확인
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            raise ValueError("GOOGLE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 설정에서 환경 변수를 추가해주세요.")
+
+        gemini_client = GeminiClient(api_key=api_key)
 
         today = datetime.now().strftime("%Y년 %m월 %d일")
         birth_str = birth_date.strftime("%Y년 %m월 %d일")
@@ -129,6 +157,10 @@ def generate_fortune(name, birth_date, gender, zodiac):
 
         response = gemini_client.chat(prompt, max_tokens=2048)
 
+        # 응답 검증
+        if not response or "오류 발생:" in response:
+            raise ValueError(f"AI 응답 오류: {response}")
+
         # 응답 파싱
         fortune_data = {
             "full_text": response,
@@ -139,7 +171,19 @@ def generate_fortune(name, birth_date, gender, zodiac):
 
         return fortune_data
 
+    except ValueError as e:
+        # 환경 변수나 API 키 관련 에러
+        print(f"ValueError in generate_fortune: {str(e)}")
+        return {
+            "error": str(e),
+            "name": name,
+            "zodiac": zodiac
+        }
     except Exception as e:
+        # 기타 예상치 못한 에러
+        print(f"Exception in generate_fortune: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return {
             "error": f"운세 생성 중 오류가 발생했습니다: {str(e)}",
             "name": name,
