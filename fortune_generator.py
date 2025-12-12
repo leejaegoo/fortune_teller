@@ -58,8 +58,24 @@ class FortuneGenerator:
         "흰색", "검은색", "금색", "은색", "청록색"
     ]
     
-    # 행운의 숫자
-    LUCKY_NUMBERS = list(range(1, 50))
+    # 색상별 상품 추천
+    COLOR_PRODUCTS = {
+        "빨간색": "빨간색 티셔츠, 빨간색 가방, 빨간색 액세서리",
+        "파란색": "파란색 후드티, 파란색 운동화, 파란색 시계",
+        "노란색": "노란색 스카프, 노란색 지갑, 노란색 케이스",
+        "초록색": "초록색 후드티, 초록색 가방, 초록색 모자",
+        "보라색": "보라색 스웨터, 보라색 액세서리, 보라색 양말",
+        "주황색": "주황색 후드티, 주황색 운동화, 주황색 모자",
+        "분홍색": "분홍색 티셔츠, 분홍색 가방, 분홍색 액세서리",
+        "하늘색": "하늘색 셔츠, 하늘색 가방, 하늘색 시계",
+        "민트색": "민트색 후드티, 민트색 운동화, 민트색 모자",
+        "베이지색": "베이지색 코트, 베이지색 가방, 베이지색 신발",
+        "흰색": "흰색 티셔츠, 흰색 운동화, 흰색 모자",
+        "검은색": "검은색 후드티, 검은색 가방, 검은색 시계",
+        "금색": "금색 액세서리, 금색 시계, 금색 지갑",
+        "은색": "은색 액세서리, 은색 시계, 은색 케이스",
+        "청록색": "청록색 후드티, 청록색 가방, 청록색 운동화"
+    }
     
     def generate_fortune(self, name, age, gender, zodiac):
         """
@@ -78,29 +94,25 @@ class FortuneGenerator:
         seed = sum(ord(c) for c in name) + age
         random.seed(seed)
         
-        fortune_text = f"""**전체운**
+        # 행운의 색상 선택
+        lucky_color = random.choice(self.LUCKY_COLORS)
+        product_recommendation = self.COLOR_PRODUCTS.get(lucky_color, "해당 색상의 액세서리나 의류")
+        
+        # 행운의 로또 번호 6개 생성 (1~45 중복 없이)
+        lotto_numbers = sorted(random.sample(range(1, 46), 6))
+        lotto_str = ", ".join(map(str, lotto_numbers))
+        
+        fortune_text = f"""**오늘의 운세**
 {random.choice(self.OVERALL_FORTUNES)}
 
-**사랑운**
-{random.choice(self.LOVE_FORTUNES)}
-
-**재물운**
-{random.choice(self.WEALTH_FORTUNES)}
-
-**건강운**
-{random.choice(self.HEALTH_FORTUNES)}
-
-**직장/학업운**
-{random.choice(self.WORK_FORTUNES)}
+**행운의 로또 번호**
+{lotto_str}
 
 **행운의 색상**
-{random.choice(self.LUCKY_COLORS)}
+{lucky_color}
 
-**행운의 숫자**
-{random.choice(self.LUCKY_NUMBERS)}
-
-{zodiac['emoji']} **{zodiac['name']}띠 특별 운세**
-{self._get_zodiac_fortune(zodiac['name'])}
+**추천 상품**
+{product_recommendation}
 """
         
         return fortune_text
