@@ -4,181 +4,102 @@ const formContainer = document.getElementById('formContainer');
 const loading = document.getElementById('loading');
 const resultContainer = document.getElementById('resultContainer');
 
+console.log('Script loaded v4.0 (Fix display logic)');
+
 // 폼 제출 이벤트
 fortuneForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     // 입력값 가져오기
-    const name = document.getElementById('name').value.trim();
+    const name = document.getElementById('name').value;
     const birthDate = document.getElementById('birthDate').value;
     const gender = document.querySelector('input[name="gender"]:checked')?.value;
     
-    // 유효성 검사
     if (!name || !birthDate || !gender) {
         alert('모든 정보를 입력해주세요!');
         return;
     }
-    
-    // UI 상태 변경
+
+    // UI 상태 변경: 폼 숨기고 로딩 표시
     formContainer.classList.add('hidden');
+    formContainer.style.display = 'none'; // 폼 즉시 숨김
+    
     loading.classList.add('show');
-    resultContainer.classList.remove('show');
+    loading.setAttribute('style', 'display: block !important;'); // 로딩 강제 표시
+    resultContainer.classList.add('hidden');
     
     try {
-        // API 호출
         const response = await fetch('/get_fortune', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name,
-                birth_date: birthDate,
-                gender: gender
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, birth_date: birthDate, gender })
         });
         
         const data = await response.json();
-
-        // 디버깅: 응답 데이터 확인
-        console.log('API Response:', data);
-
-        if (response.ok) {
-            // 에러 필드가 있는지 확인
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            // 성공: 결과 표시
-            displayFortune(data);
-        } else {
-            // 오류 처리
-            throw new Error(data.error || '운세를 가져오는데 실패했습니다.');
-        }
+        console.log("API Response:", data);
         
-    } catch (error) {
-        console.error('Error:', error);
-        alert(`오류가 발생했습니다: ${error.message}`);
-        
-        // UI 복원
+        // 로딩 숨기기
         loading.classList.remove('show');
-        formContainer.classList.remove('hidden');
-    }
-});
+        loading.style.display = 'none'; // 강제 숨김
+        console.log("Loading hidden");
 
-/**
- * 운세 결과를 화면에 표시
- */
-function displayFortune(data) {
-    // 로딩 숨기기
-    loading.classList.remove('show');
-    
-    // 기본 정보 표시
-    document.getElementById('userName').textContent = `${data.name}님의 오늘의 운세`;
-    document.getElementById('zodiacEmoji').textContent = data.zodiac.emoji;
-    document.getElementById('zodiacName').textContent = `${data.zodiac.name}띠`;
-    document.getElementById('resultDate').textContent = data.date;
-    
-    // 운세 내용 파싱 및 표시
-    const fortuneContent = document.getElementById('fortuneContent');
-    fortuneContent.innerHTML = parseFortuneText(data.full_text);
-    
-    // 명언 표시
-    if (data.quote) {
-        document.getElementById('quoteText').textContent = `"${data.quote.text}"`;
-        document.getElementById('quoteAuthor').textContent = `- ${data.quote.author}`;
-    }
-    
-    // 결과 컨테이너 표시
-    resultContainer.classList.add('show');
-    
-    // 스크롤을 결과로 이동
-    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-/**
- * Claude의 운세 텍스트를 HTML로 변환
- */
-function parseFortuneText(text) {
-    // text가 없으면 에러 메시지 반환
-    if (!text) {
-        console.error('Fortune text is undefined or empty');
-        return '<p class="error">운세를 불러올 수 없습니다. 다시 시도해주세요.</p>';
-    }
-
-    // **제목** 형식을 h3 태그로 변환
-    let html = text.replace(/\*\*([^*]+)\*\*/g, '<h3>$1</h3>');
-    
-    // 줄바꿈을 <p> 태그로 변환
-    const lines = html.split('\n').filter(line => line.trim());
-    let result = '';
-    let currentParagraph = '';
-    
-    lines.forEach(line => {
-        if (line.startsWith('<h3>')) {
-            // 제목이면 이전 단락을 마무리하고 제목 추가
-            if (currentParagraph) {
-                result += `<p>${currentParagraph}</p>`;
-                currentParagraph = '';
-            }
-            result += line;
-        } else {
-            // 일반 텍스트면 단락에 추가
-            if (currentParagraph) {
-                currentParagraph += ' ';
-            }
-            currentParagraph += line.trim();
+        if (data.error) {
+            throw new Error(data.error);
         }
-    });
-    
-    // 마지막 단락 추가
-    if (currentParagraph) {
-        result += `<p>${currentParagraph}</p>`;
-    }
-    
-    return result;
-}
 
-/**
- * 생년월일 입력 제한 (오늘 날짜까지만)
- */
+        // 데이터 채우기
+        console.log("Populating data...");
+        document.getElementById('userName').textContent = `${data.name}님의 운세`;
+        if (data.zodiac) {
+            document.getElementById('zodiacEmoji').textContent = data.zodiac.emoji;
+            document.getElementById('zodiacName').textContent = data.zodiac.name;
+        }
+        document.getElementById('resultDate').textContent = data.date;
+        
+        // 텍스트 변환 (마크다운 -> HTML)
+        let htmlContent = data.full_text;
+        if (htmlContent) {
+            htmlContent = htmlContent.replace(/\*\*([^*]+)\*\*/g, '<h3>$1</h3>');
+            htmlContent = htmlContent.replace(/\n/g, '<br>');
+            document.getElementById('fortuneContent').innerHTML = htmlContent;
+        }
+        
+        if (data.quote) {
+            document.getElementById('quoteText').textContent = data.quote.text;
+            document.getElementById('quoteAuthor').textContent = data.quote.author;
+        }
+
+        // 결과 화면 표시 (가장 중요!)
+        resultContainer.classList.remove('hidden');
+        resultContainer.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important;');
+        
+        // 폼 강제 숨김
+        formContainer.classList.add('hidden');
+        formContainer.style.display = 'none';
+
+        console.log("Result forced visible");
+        
+        // 스크롤 이동
+        setTimeout(() => {
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+
+    } catch (error) {
+        console.error(error);
+        alert("오류가 발생했습니다: " + error.message);
+        
+        // 복구
+        loading.classList.remove('show');
+        loading.style.display = 'none';
+        formContainer.classList.remove('hidden');
+        formContainer.style.display = 'block';
+    }
+});
+
+// 초기화
 const birthDateInput = document.getElementById('birthDate');
-const today = new Date().toISOString().split('T')[0];
-birthDateInput.setAttribute('max', today);
-
-// 기본값을 1990년으로 설정
-birthDateInput.setAttribute('value', '1990-01-01');
-
-/**
- * 입력 필드 포커스 효과
- */
-const inputs = document.querySelectorAll('input[type="text"], input[type="date"]');
-inputs.forEach(input => {
-    input.addEventListener('focus', function() {
-        this.parentElement.style.transform = 'scale(1.02)';
-        this.parentElement.style.transition = 'transform 0.2s ease';
-    });
-    
-    input.addEventListener('blur', function() {
-        this.parentElement.style.transform = 'scale(1)';
-    });
-});
-
-/**
- * 이름 입력 시 자동으로 다음 필드로 포커스 이동
- */
-document.getElementById('name').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        document.getElementById('birthDate').focus();
-    }
-});
-
-// 페이지 로드 시 애니메이션
-window.addEventListener('load', () => {
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        document.body.style.transition = 'opacity 0.5s ease';
-        document.body.style.opacity = '1';
-    }, 100);
-});
-
+if(birthDateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    birthDateInput.setAttribute('max', today);
+    birthDateInput.setAttribute('value', '1995-01-01');
+}

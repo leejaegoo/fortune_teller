@@ -2,10 +2,20 @@
 오늘의 운세 웹 애플리케이션
 """
 import os
+import random  # random 모듈 추가
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify
+
+try:
+    from dotenv import load_dotenv
+    # .env 파일 로드 (로컬 개발용)
+    load_dotenv()
+except ImportError:
+    # 배포 환경에서는 dotenv가 없을 수 있음 (무시)
+    pass
+
 from gemini_client import GeminiClient
-import random
+from fortune_generator import FortuneGenerator  # 백업용 생성기 추가
 
 app = Flask(__name__)
 
@@ -66,18 +76,46 @@ def get_random_quote():
 
 def generate_fortune(name, birth_date, gender, zodiac):
     """
-    Claude AI를 사용하여 개인화된 운세 생성
-    
-    Args:
-        name: 이름
-        birth_date: 생년월일 (datetime)
-        gender: 성별
-        zodiac: 띠 정보
-        
-    Returns:
-        dict: 운세 정보 (전체운, 사랑운, 재물운, 건강운, 직장/학업운)
+    Claude AI를 사용하여 개인화된 운세 생성 (실패 시 백업 생성기 사용)
     """
+    # 기본값: 백업 모드 실행
+    def run_backup_mode(error_msg="Unknown Error"):
+        print(f"⚠️ AI 호출 실패 (백업 모드 전환): {error_msg}")
+        try:
+            fortune_gen = FortuneGenerator()
+            age = datetime.now().year - birth_date.year
+            backup_response = fortune_gen.generate_fortune(name, age, gender, zodiac)
+            return {
+                "full_text": backup_response,
+                "name": name,
+                "zodiac": zodiac,
+                "date": datetime.now().strftime("%Y년 %m월 %d일"),
+                "is_backup": True
+            }
+        except Exception as e:
+            # 백업마저 실패하면 정말 최소한의 응답 반환
+            return {
+                "full_text": f"운세 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.\n(Error: {str(e)})",
+                "name": name,
+                "zodiac": zodiac,
+                "date": datetime.now().strftime("%Y년 %m월 %d일"),
+                "error": str(e) # 프론트엔드가 에러로 인식하도록
+            }
+
     try:
+        # 1차 시도: Google Gemini AI 사용
+        # 타임아웃 처리를 위한 설정
+        import signal
+        
+        def handler(signum, frame):
+            raise TimeoutError("AI Response Timeout")
+            
+        try:
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(5) # 5초 제한
+        except AttributeError:
+            pass
+
         gemini_client = GeminiClient()
         
         today = datetime.now().strftime("%Y년 %m월 %d일")
@@ -121,22 +159,25 @@ def generate_fortune(name, birth_date, gender, zodiac):
         
         response = gemini_client.chat(prompt, max_tokens=2048)
         
-        # 응답 파싱
-        fortune_data = {
+        # 타임아웃 해제
+        try:
+            signal.alarm(0)
+        except AttributeError:
+            pass
+        
+        # AI 응답이 에러 메시지를 포함하는지 확인
+        if "오류 발생" in response:
+            return run_backup_mode(response)
+            
+        return {
             "full_text": response,
             "name": name,
             "zodiac": zodiac,
             "date": today
         }
         
-        return fortune_data
-        
     except Exception as e:
-        return {
-            "error": f"운세 생성 중 오류가 발생했습니다: {str(e)}",
-            "name": name,
-            "zodiac": zodiac
-        }
+        return run_backup_mode(str(e))
 
 
 @app.route('/')
@@ -182,14 +223,6 @@ def get_fortune():
 
 
 if __name__ == '__main__':
-    # API 키 확인
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        print("\n❌ 오류: GOOGLE_API_KEY 환경변수가 설정되지 않았습니다.\n")
-        print("사용 방법:")
-        print("  export GOOGLE_API_KEY='your-api-key'\n")
-        exit(1)
-    
     print("\n" + "="*50)
     print("🔮 오늘의 운세 웹 애플리케이션 (Google Gemini 2.5 Flash)")
     print("="*50)
@@ -197,4 +230,3 @@ if __name__ == '__main__':
     print("브라우저에서 http://localhost:5001 을 열어주세요!\n")
     
     app.run(debug=True, host='0.0.0.0', port=5001)
-

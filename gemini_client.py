@@ -17,8 +17,8 @@ class GeminiClient:
         self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "API 키가 제공되지 않았습니다. "
-                "환경변수 GOOGLE_API_KEY를 설정하거나 api_key 파라미터를 제공하세요."
+                "API 키가 설정되지 않았습니다. "
+                "환경변수 GOOGLE_API_KEY를 확인해주세요."
             )
         genai.configure(api_key=self.api_key)
         self.model = genai.GenerativeModel('models/gemini-2.5-flash')
