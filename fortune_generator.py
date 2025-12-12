@@ -2,6 +2,7 @@
 API 없이 작동하는 운세 생성기
 """
 import random
+from coupang_client import CoupangClient
 
 class FortuneGenerator:
     """운세 템플릿 기반 생성기"""
@@ -96,11 +97,31 @@ class FortuneGenerator:
         
         # 행운의 색상 선택
         lucky_color = random.choice(self.LUCKY_COLORS)
-        product_recommendation = self.COLOR_PRODUCTS.get(lucky_color, "해당 색상의 액세서리나 의류")
         
         # 행운의 로또 번호 6개 생성 (1~45 중복 없이)
         lotto_numbers = sorted(random.sample(range(1, 46), 6))
         lotto_str = ", ".join(map(str, lotto_numbers))
+        
+        # 쿠팡 API로 실제 상품 검색 시도
+        products = []
+        try:
+            coupang = CoupangClient()
+            products = coupang.search_by_color(lucky_color, limit=3)
+        except Exception as e:
+            print(f"쿠팡 상품 검색 실패: {e}")
+        
+        # API 실패 시 더미 상품 데이터 생성 (테스트용)
+        if not products:
+            products = self._get_dummy_products(lucky_color)
+        
+        # 상품 정보 포맷팅 (텍스트용)
+        if products:
+            product_recommendation = "\n".join([
+                f"- {p['name']} ({p['price']:,}원)" for p in products
+            ])
+        else:
+            # 최후의 수단: 기본 텍스트
+            product_recommendation = self.COLOR_PRODUCTS.get(lucky_color, "해당 색상의 액세서리나 의류")
         
         fortune_text = f"""**오늘의 운세**
 {random.choice(self.OVERALL_FORTUNES)}
@@ -115,7 +136,7 @@ class FortuneGenerator:
 {product_recommendation}
 """
         
-        return fortune_text
+        return fortune_text, products  # 상품 정보도 함께 반환
     
     def _get_zodiac_fortune(self, zodiac_name):
         """띠별 특별 운세"""
@@ -135,4 +156,43 @@ class FortuneGenerator:
         }
         
         return zodiac_fortunes.get(zodiac_name, "오늘은 특별히 행운이 따르는 날입니다. 긍정적인 마음으로 하루를 보내세요.")
+    
+    def _get_dummy_products(self, color):
+        """테스트용 더미 상품 데이터 생성"""
+        dummy_products = {
+            "빨간색": [
+                {"name": f"{color} 기본 티셔츠", "price": 19900, "image": "https://via.placeholder.com/200x200/FF0000/FFFFFF?text=Red+Tee", "link": "#", "rating": 4.5, "reviews": 123},
+                {"name": f"{color} 캐주얼 가방", "price": 39000, "image": "https://via.placeholder.com/200x200/FF0000/FFFFFF?text=Red+Bag", "link": "#", "rating": 4.3, "reviews": 87},
+                {"name": f"{color} 스니커즈", "price": 89000, "image": "https://via.placeholder.com/200x200/FF0000/FFFFFF?text=Red+Shoes", "link": "#", "rating": 4.7, "reviews": 256}
+            ],
+            "파란색": [
+                {"name": f"{color} 후드티", "price": 45000, "image": "https://via.placeholder.com/200x200/0000FF/FFFFFF?text=Blue+Hoodie", "link": "#", "rating": 4.6, "reviews": 198},
+                {"name": f"{color} 운동화", "price": 129000, "image": "https://via.placeholder.com/200x200/0000FF/FFFFFF?text=Blue+Shoes", "link": "#", "rating": 4.8, "reviews": 342},
+                {"name": f"{color} 시계", "price": 159000, "image": "https://via.placeholder.com/200x200/0000FF/FFFFFF?text=Blue+Watch", "link": "#", "rating": 4.4, "reviews": 156}
+            ],
+            "노란색": [
+                {"name": f"{color} 스카프", "price": 25000, "image": "https://via.placeholder.com/200x200/FFFF00/000000?text=Yellow+Scarf", "link": "#", "rating": 4.2, "reviews": 94},
+                {"name": f"{color} 지갑", "price": 59000, "image": "https://via.placeholder.com/200x200/FFFF00/000000?text=Yellow+Wallet", "link": "#", "rating": 4.5, "reviews": 178},
+                {"name": f"{color} 케이스", "price": 15000, "image": "https://via.placeholder.com/200x200/FFFF00/000000?text=Yellow+Case", "link": "#", "rating": 4.3, "reviews": 67}
+            ],
+            "초록색": [
+                {"name": f"{color} 후드티", "price": 42000, "image": "https://via.placeholder.com/200x200/00FF00/000000?text=Green+Hoodie", "link": "#", "rating": 4.5, "reviews": 145},
+                {"name": f"{color} 가방", "price": 68000, "image": "https://via.placeholder.com/200x200/00FF00/000000?text=Green+Bag", "link": "#", "rating": 4.4, "reviews": 112},
+                {"name": f"{color} 모자", "price": 28000, "image": "https://via.placeholder.com/200x200/00FF00/000000?text=Green+Cap", "link": "#", "rating": 4.6, "reviews": 203}
+            ],
+            "보라색": [
+                {"name": f"{color} 스웨터", "price": 89000, "image": "https://via.placeholder.com/200x200/800080/FFFFFF?text=Purple+Sweater", "link": "#", "rating": 4.7, "reviews": 234},
+                {"name": f"{color} 액세서리", "price": 35000, "image": "https://via.placeholder.com/200x200/800080/FFFFFF?text=Purple+Accessory", "link": "#", "rating": 4.3, "reviews": 98},
+                {"name": f"{color} 양말", "price": 12000, "image": "https://via.placeholder.com/200x200/800080/FFFFFF?text=Purple+Socks", "link": "#", "rating": 4.4, "reviews": 156}
+            ]
+        }
+        
+        # 기본 더미 상품 (색상별 매칭이 안 될 경우)
+        default_products = [
+            {"name": f"{color} 기본 상품 1", "price": 30000, "image": "https://via.placeholder.com/200x200/CCCCCC/666666?text=Product+1", "link": "#", "rating": 4.5, "reviews": 100},
+            {"name": f"{color} 기본 상품 2", "price": 50000, "image": "https://via.placeholder.com/200x200/CCCCCC/666666?text=Product+2", "link": "#", "rating": 4.3, "reviews": 80},
+            {"name": f"{color} 기본 상품 3", "price": 70000, "image": "https://via.placeholder.com/200x200/CCCCCC/666666?text=Product+3", "link": "#", "rating": 4.6, "reviews": 120}
+        ]
+        
+        return dummy_products.get(color, default_products)
 

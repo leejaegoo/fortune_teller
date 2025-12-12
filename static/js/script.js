@@ -69,6 +69,46 @@ fortuneForm.addEventListener('submit', async (e) => {
             document.getElementById('quoteAuthor').textContent = data.quote.author;
         }
 
+        // 상품 정보 표시
+        console.log("Products data:", data.products); // 디버깅용
+        if (data.products && data.products.length > 0) {
+            console.log("Displaying products:", data.products.length); // 디버깅용
+            const productsGrid = document.getElementById('productsGrid');
+            const productsSection = document.getElementById('productsSection');
+            
+            if (!productsGrid || !productsSection) {
+                console.error("Products section elements not found!");
+                return;
+            }
+            
+            productsGrid.innerHTML = ''; // 기존 내용 초기화
+            
+            data.products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <a href="${product.link}" target="_blank" rel="noopener noreferrer">
+                        <img src="${product.image}" alt="${product.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'200\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'200\\' height=\\'200\\'/%3E%3Ctext fill=\\'%23999\\' font-family=\\'sans-serif\\' font-size=\\'14\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\'%3E이미지 없음%3C/text%3E%3C/svg%3E'">
+                        <div class="product-info">
+                            <h4>${product.name}</h4>
+                            <p class="product-price">${product.price.toLocaleString()}원</p>
+                            ${product.rating > 0 ? `<p class="product-rating">⭐ ${product.rating} (리뷰 ${product.reviews}개)</p>` : ''}
+                        </div>
+                    </a>
+                `;
+                productsGrid.appendChild(productCard);
+            });
+            
+            productsSection.style.display = 'block';
+            console.log("Products section displayed");
+        } else {
+            console.log("No products data found");
+            const productsSection = document.getElementById('productsSection');
+            if (productsSection) {
+                productsSection.style.display = 'none';
+            }
+        }
+
         // 결과 화면 표시 (가장 중요!)
         resultContainer.classList.remove('hidden');
         resultContainer.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important;');

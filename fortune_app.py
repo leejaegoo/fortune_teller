@@ -84,14 +84,18 @@ def generate_fortune(name, birth_date, gender, zodiac):
         try:
             fortune_gen = FortuneGenerator()
             age = datetime.now().year - birth_date.year
-            backup_response = fortune_gen.generate_fortune(name, age, gender, zodiac)
-            return {
+            backup_response, products = fortune_gen.generate_fortune(name, age, gender, zodiac)
+            result = {
                 "full_text": backup_response,
                 "name": name,
                 "zodiac": zodiac,
                 "date": datetime.now().strftime("%Y년 %m월 %d일"),
                 "is_backup": True
             }
+            # 상품 정보가 있으면 추가
+            if products:
+                result["products"] = products
+            return result
         except Exception as e:
             # 백업마저 실패하면 정말 최소한의 응답 반환
             return {
